@@ -77,13 +77,9 @@ export default function SignUp() {
       console.log(data)
 
       axios
-        .post(
-          "https://horizonwork-server.onrender.com/api/auth/sign-up",
-          data,
-          {
-            withCredentials: true,
-          }
-        )
+        .post("https://horizonwork-server.vercel.app/api/auth/sign-up", data, {
+          withCredentials: true,
+        })
         .then((res) => {
           if (res.data?.success === true) {
             toast.success(res.data?.message)
