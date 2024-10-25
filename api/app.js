@@ -82,6 +82,23 @@ app.get("/api/home", Unauthorized, (req, res) => {
   })
 })
 
+app.get("/", (req, res) => {
+  res.json({
+    data: [
+      {
+        id: 1,
+        name: "Test 1",
+        description: "Description test 1",
+      },
+      {
+        id: 2,
+        name: "Test 2",
+        description: "Description test 2",
+      },
+    ],
+  })
+})
+
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur le port http://localhost:${PORT}`)
 })
