@@ -23,9 +23,6 @@ export default function SignUp() {
   /* const [validateSuceess, setValidateSuceess] = useState(false)
   const [otp, setOtp] = useState("") */
 
-  const ProductionApi = process.env.PRODUCTION_API
-  const LocalApi = process.env.LOCAL_API
-
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
   const [username, setUsername] = useState("")
