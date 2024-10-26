@@ -74,21 +74,22 @@ export default function SignUp() {
       console.log(data)
 
       axios
-        .post("https://horizonwork-server.vercel.app/api/auth/sign-up", data, {
+        .post("http://localhost:8000/api/auth/sign-up", data, {
           withCredentials: true,
         })
         .then((res) => {
-          if (res.data?.success === true) {
+          console.log(res)
+          /* if (res.data?.success === true) {
             toast.success(res.data?.message)
             setTimeout(() => {
               navigation("/verify-email")
             }, 1000)
             console.log(res.data)
-          }
+          } */
         })
         .catch((err) => {
-          console.log(err.response.data, "erreur")
-          toast.warning(err.response.data?.error)
+          console.log(err, "erreur")
+          /* toast.warning(err.response.data?.error) */
         })
         .finally(() => {
           setTimeout(() => {

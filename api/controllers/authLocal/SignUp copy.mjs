@@ -1,5 +1,3 @@
-import "dotenv/config.js"
-import jwt from "jsonwebtoken"
 import { v4 as uuid } from "uuid"
 import User from "../../model/UserSchema/User.Model.mjs"
 import { catchAsync } from "../../utils/catchAsync.mjs"
@@ -14,13 +12,12 @@ import { hashPassword } from "../../utils/hashPassword.mjs"
 import { sendMail } from "../../utils/sendMailAuth.mjs"
 
 export const signUpLocal = catchAsync(async (req, res) => {
-  const { firstname, lastname, email, username, password, confirmPassword } =
-    req.body
+  const { fname, lname, email, username, password, confirmPassword } = req.body
 
-  const Fname = filterFirstName(firstname, res)
-  const Lname = filterLastName(lastname, res)
+  const Fname = filterFirstName(fname, res)
+  const Lname = filterLastName(lname, res)
   const Email = await filterEmail(email, res)
-  const Password = await hashPassword(filterPassword(password, res))
+  const Password = await hashPassword(filterPassword(password, res)) // Attendre le hashage
   const confirmationError = filterConfirmPassword(
     confirmPassword,
     password,
@@ -28,7 +25,7 @@ export const signUpLocal = catchAsync(async (req, res) => {
   )
   if (confirmationError) return confirmationError
 
-  const googleId = uuid() // Génère un ID Google si nécessaire
+  const googleId = uuid()
 
   const existingUser = await User.findOne({
     $or: [{ email: Email }, { username: username }],
@@ -44,36 +41,24 @@ export const signUpLocal = catchAsync(async (req, res) => {
   }
 
   const newUser = await User.create({
-    firstname: Fname,
-    lastname: Lname,
+    fname: Fname,
+    lname: Lname,
     username: username,
     email: Email,
     password: Password,
     googleId: googleId,
     isEmailConfirmed: false,
-    token: uuid(),
+    token: uuidv4(),
     googleAuth: false,
   })
 
   const userToReturn = {
-    firstname: newUser.firstname,
-    lastname: newUser.lastname,
-    username: newUser.username,
-    email: newUser.email,
+    displayName: newUser.displayName,
+    shortName: newUser.shortName,
+    otp: newUser.otp,
   }
-  const tokenPayload = { id: newUser._id, email: newUser.email } // Créez un payload pour le token
-  const token = jwt.sign(tokenPayload, process.env.KEY_SECRET, {
-    expiresIn: "1h",
-  })
-
-  // Envoyer le cookie avec le token
-  res.cookie("token", token, {
-    httpOnly: false,
-    secure: false,
-    maxAge: 72 * 60 * 60 * 1000,
-  })
 
   sendMail(newUser.token, newUser.email)
-
-  res.status(201).json({ success: true })
+  req.session.user = newUser._id
+  res.status(201).json({ success: userToReturn })
 })

@@ -1,4 +1,5 @@
 import axios from "axios"
+import Cookies from "js-cookie"
 import { Fragment, useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Bounce, ToastContainer } from "react-toastify"
@@ -18,8 +19,11 @@ import VerifyEmail from "./page/VerifyEmail"
 function App() {
   const [loader, setLoader] = useState(true)
   const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
 
   useEffect(() => {
+    // Vérifiez ici
+    setToken(Cookies.get("token"))
     axios
       .get("https://horizonwork-server.onrender.com", {
         withCredentials: true,
@@ -35,6 +39,8 @@ function App() {
       })
     setTimeout(() => setLoader(false), 1000)
   }, [])
+
+  console.log(token)
 
   return (
     <Fragment>

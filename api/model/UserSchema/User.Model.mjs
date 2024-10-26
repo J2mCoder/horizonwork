@@ -34,8 +34,9 @@ const UserModel = new Schema(
       type: Boolean,
       default: false,
     },
-    token: {
-      type: String,
+    status: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true, versionKey: false }
