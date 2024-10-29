@@ -8,7 +8,7 @@ import { SiGoogletagmanager } from "react-icons/si"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 
-export default function Login() {
+export default function VerifyCode() {
   const [loader, setLoader] = useState(false)
   const [otp1, setOtp1] = useState("")
   const [otp2, setOtp2] = useState("")
@@ -142,14 +142,14 @@ export default function Login() {
                   </Button>
                 </div>
                 <div className="flex items-center justify-center">
-                  <Link
-                    to={"/sign-up"}
-                    className="text-center text-sm font-bold text-zinc-600">
-                    {"Vous n'avez pas de compte ? "}
-                    <span className=" underline hover:text-customDark">
-                      Inscrivez-vous
-                    </span>
-                  </Link>
+                  <p className="text-center text-sm font-bold text-zinc-600">
+                    {"Vous souhaitez modifier votre adresse email ? "}
+                    <Link
+                      to={"/change-email"}
+                      className="underline hover:text-customDark">
+                      Cliquez ici
+                    </Link>
+                  </p>
                 </div>
               </form>
             </div>

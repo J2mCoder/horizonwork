@@ -1,9 +1,9 @@
 import "dotenv/config"
 import nodemailer from "nodemailer"
 
-// Fonction pour envoyer l'e-mail
-export const sendMail = async (token, email) => {
-  // Création du template pour l'envoi d'e-mail
+// Fonction pour envoyer l'e-mail// Fonction pour envoyer l'e-mail
+export const sendMail = async (email, verificationCode) => {
+  // Création du template pour l'envoi d'e-mail avec un code de vérification
   const emailTemplate = `
   <html>
     <head>
@@ -34,19 +34,20 @@ export const sendMail = async (token, email) => {
           line-height: 1.6;
           color: #555;
         }
-        .button {
+        .code-box {
           background-color: #2A305D;
           color: #fff;
-          padding: 10px 15px;
+          font-size: 20px;
+          padding: 10px;
           text-align: center;
-          text-decoration: none;
           border-radius: 5px;
-          display: inline-block;
+          margin: 20px 0;
+          letter-spacing: 2px;
         }
         footer {
           margin-top: 20px;
           text-align: center;
-          color: #f4f4fb;
+          color: #888;
           font-size: 12px;
         }
       </style>
@@ -54,11 +55,9 @@ export const sendMail = async (token, email) => {
     <body>
       <div class="container">
         <h1>Bienvenue à HorizonWork!</h1>
-        <p>Merci de vous être inscrit à notre plateforme de gestion de projet. Nous sommes ravis de vous avoir avec nous.</p>
-        <p>Pour commencer à utiliser notre service, veuillez vérifier votre adresse e-mail en cliquant sur le bouton ci-dessous :</p>
-        <a href="http://localhost:5173/verify-email/${token}" class="button">Vérifier mon e-mail</a>
-        <p>Une fois votre adresse e-mail vérifiée, vous pourrez accéder à toutes les fonctionnalités de HorizonWork et commencer à gérer vos projets efficacement.</p>
-        <p>Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter.</p>
+        <p>Merci de vous être inscrit à notre plateforme. Veuillez utiliser le code de confirmation ci-dessous pour vérifier votre adresse e-mail :</p>
+        <div class="code-box">${verificationCode}</div>
+        <p>Si vous avez des questions, notre équipe est là pour vous aider.</p>
         <footer>
           <p>© ${new Date().getFullYear()} Tous droits réservés.</p>
           <p>HorizonWork by Horizon Platforms</p>
@@ -66,7 +65,7 @@ export const sendMail = async (token, email) => {
       </div>
     </body>
   </html>
-`
+  `
   // Crée un transporteur Nodemailer
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -80,8 +79,8 @@ export const sendMail = async (token, email) => {
   const mailOptions = {
     from: "jeandedieumbumba2802@gmail.com",
     to: email,
-    subject: "Bienvenue à Mon Service",
-    text: "Merci de votre inscription à Mon Service",
+    subject: "Code de confirmation - HorizonWork",
+    text: `Votre code de confirmation est : ${verificationCode}`,
     html: emailTemplate,
   }
 
@@ -96,5 +95,3 @@ export const sendMail = async (token, email) => {
     console.error("Stack:", error.stack)
   }
 }
-
-console.log("PASS_KEY_MAIL:", process.env.PASS_KEY_MAIL, process.env.port)

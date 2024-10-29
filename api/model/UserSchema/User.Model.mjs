@@ -38,6 +38,10 @@ const UserModel = new Schema(
       type: Boolean,
       default: true,
     },
+    avatar: {
+      type: String,
+      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+    },
   },
   { timestamps: true, versionKey: false }
 )

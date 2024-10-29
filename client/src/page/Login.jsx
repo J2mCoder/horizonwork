@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ValidateEmail, ValidatePassword } from "@/components/Validate"
+import { userAtom } from "@/contexts/UseUser"
 import axios from "axios"
 import { useState } from "react"
 import { FcGoogle } from "react-icons/fc"
@@ -10,8 +11,11 @@ import { ImSpinner } from "react-icons/im"
 import { SiGoogletagmanager } from "react-icons/si"
 import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
+import { useRecoilValue } from "recoil"
 
 export default function Login() {
+  const val = useRecoilValue(userAtom)
+  console.log(val)
   const [loader, setLoader] = useState(false)
 
   const [email, setEmail] = useState("")

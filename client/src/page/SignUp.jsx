@@ -10,6 +10,7 @@ import {
   ValidatePassword,
   ValidateUsername,
 } from "@/components/Validate"
+import { userAtom } from "@/contexts/UseUser"
 import axios from "axios"
 import { useState } from "react"
 import { FcGoogle } from "react-icons/fc"
@@ -17,18 +18,19 @@ import { ImSpinner } from "react-icons/im"
 import { SiGoogletagmanager } from "react-icons/si"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
+import { useRecoilState } from "recoil"
 
 export default function SignUp() {
   const [loader, setLoader] = useState(false)
-  /* const [validateSuceess, setValidateSuceess] = useState(false)
-  const [otp, setOtp] = useState("") */
-
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [cpassword, setCpassword] = useState("")
+
+  const [user, setUser] = useRecoilState(userAtom)
+  console.log(user)
 
   const [errFname, setErrFname] = useState(false)
   const [errLname, setErrLname] = useState(false)
@@ -79,13 +81,14 @@ export default function SignUp() {
         })
         .then((res) => {
           console.log(res)
-          /* if (res.data?.success === true) {
+          if (res.data?.success === true) {
             toast.success(res.data?.message)
+            setUser(res.data?.user)
             setTimeout(() => {
               navigation("/verify-email")
             }, 1000)
             console.log(res.data)
-          } */
+          }
         })
         .catch((err) => {
           console.log(err, "erreur")

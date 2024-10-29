@@ -1,11 +1,16 @@
 import axios from "axios"
 import Cookies from "js-cookie"
-import { Fragment, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Bounce, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useRecoilState } from "recoil"
 import Loader from "./components/Loader"
-import { UserContext } from "./contexts/UserContext"
+import ProtectedDashboard from "./config/ProtectedDashboard"
+import ProtectedLogin from "./config/ProtectedLogin"
+import ProtectedSignup from "./config/ProtectedSignup"
+import ProtectedVerifyCode from "./config/ProtectedVerifyCode"
+import { tokenData, userAtom } from "./contexts/UseUser"
 import Dashboard from "./page/Dashboard"
 import ForgotPassword from "./page/ForgotPassword"
 import Login from "./page/Login"
@@ -14,52 +19,83 @@ import NotFound from "./page/NotFund"
 import ResetPassword from "./page/ResetPassword"
 import SignUp from "./page/SignUp"
 import { StepSetProfile } from "./page/StepSetProfile"
-import VerifyEmail from "./page/VerifyEmail"
+import VerifyCode from "./page/VerifyCode"
 
 function App() {
   const [loader, setLoader] = useState(true)
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(null)
+  const [user, setUser] = useRecoilState(userAtom)
+  const [token, setToken] = useRecoilState(tokenData)
 
+  console.log(user)
   useEffect(() => {
-    // Vérifiez ici
     setToken(Cookies.get("token"))
     axios
-      .get("https://horizonwork-server.onrender.com", {
+      .get("http://localhost:8000/api/verify-user", {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
       })
       .then((response) => {
-        setUser(response?.data)
-        console.log(response?.data)
+        setUser(response?.data.user)
+        console.log(response)
       })
-      .catch(({ response }) => {
-        if (response?.data.type === "error") {
-          setUser(null)
-        }
+      .catch((err) => {
+        setUser(null)
+        setToken(null)
+        console.log(err)
       })
+      .finally(() => setLoader(false))
     setTimeout(() => setLoader(false), 1000)
   }, [])
 
   console.log(token)
 
   return (
-    <Fragment>
+    <>
       {loader && <Loader />}
-      <UserContext.Provider value={user}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/" exact element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/auth-set-profile" element={<StepSetProfile />} />
-            <Route path="/more-info" element={<MoreInfo />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </UserContext.Provider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/sign-up"
+            element={
+              <ProtectedSignup>
+                <SignUp />
+              </ProtectedSignup>
+            }
+          />
+          <Route
+            path="/"
+            exact
+            element={
+              <ProtectedLogin>
+                <Login />
+              </ProtectedLogin>
+            }
+          />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route
+            path="/verify-code"
+            element={
+              <ProtectedVerifyCode>
+                <VerifyCode />
+              </ProtectedVerifyCode>
+            }
+          />
+          <Route path="/auth-set-profile" element={<StepSetProfile />} />
+          <Route path="/more-info" element={<MoreInfo />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedDashboard>
+                <Dashboard />
+              </ProtectedDashboard>
+            }
+          />
+          <Route path="/*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -73,7 +109,7 @@ function App() {
         theme="light"
         transition={Bounce}
       />
-    </Fragment>
+    </>
   )
 }
 

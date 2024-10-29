@@ -11,6 +11,7 @@ import {
   filterPassword,
 } from "../../utils/filterDataUser.mjs"
 import { hashPassword } from "../../utils/hashPassword.mjs"
+import { otp } from "../../utils/otp.mjs"
 import { sendMail } from "../../utils/sendMailAuth.mjs"
 
 export const signUpLocal = catchAsync(async (req, res) => {
@@ -60,10 +61,12 @@ export const signUpLocal = catchAsync(async (req, res) => {
     lastname: newUser.lastname,
     username: newUser.username,
     email: newUser.email,
+    isEmailConfirmed: newUser.isEmailConfirmed,
+    googleAuth: newUser.googleAuth,
   }
   const tokenPayload = { id: newUser._id, email: newUser.email } // Créez un payload pour le token
   const token = jwt.sign(tokenPayload, process.env.KEY_SECRET, {
-    expiresIn: "1h",
+    expiresIn: 72 * 60 * 60 * 1000,
   })
 
   // Envoyer le cookie avec le token
@@ -73,7 +76,11 @@ export const signUpLocal = catchAsync(async (req, res) => {
     maxAge: 72 * 60 * 60 * 1000,
   })
 
-  sendMail(newUser.token, newUser.email)
+  sendMail(newUser.email, otp())
 
-  res.status(201).json({ success: true })
+  res.status(201).json({
+    success: true,
+    message: "Utilisateur inscrit avec succès",
+    user: userToReturn,
+  })
 })
