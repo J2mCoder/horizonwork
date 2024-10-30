@@ -2,17 +2,25 @@ import Footer from "@/components/Footer"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { userAtom } from "@/contexts/UseUser"
 import axios from "axios"
 import imageCompression from "browser-image-compression"
+import Cookies from "js-cookie"
 import { Upload } from "lucide-react"
 import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { FaTrashCan } from "react-icons/fa6"
 import { SiGoogletagmanager } from "react-icons/si"
+import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
+import { useRecoilState } from "recoil"
 
 export const StepSetProfile = () => {
   const [image, setImage] = useState(null)
   const [imageBlob, setImageBlob] = useState(null)
+
+  const [user, setUser] = useRecoilState(userAtom)
+  const navigate = useNavigate()
 
   const options = {
     maxSizeMB: 1,
@@ -36,23 +44,35 @@ export const StepSetProfile = () => {
 
   const sendImage = async () => {
     try {
+      if (!imageBlob) {
+        toast.warning("Veuillez sélectionner une image")
+        return
+      }
       const compressedFile = await imageCompression(imageBlob, options)
       const formData = new FormData()
       formData.append("image", compressedFile)
 
       console.log(compressedFile)
       axios
-        .post("http://localhost:8000/api/auth/set-profile", formData, {
+        .post("http://localhost:8000/api/set-profile", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${Cookies.get("token")}`,
           },
           withCredentials: true,
         })
         .then((res) => {
-          console.log(res.data)
+          if (res.data?.success === true) {
+            toast.success(res.data?.message)
+            console.log(res.data)
+            navigate("/dashboard")
+          }
         })
         .catch((err) => {
-          console.log(err.response.data)
+          if (err.response.data?.success === false) {
+            toast.warning(err.response.data?.message)
+            console.log(err.response.data)
+          }
         })
     } catch (error) {
       console.error("Erreur lors de la compression de l'image:", error)
@@ -161,7 +181,8 @@ export const StepSetProfile = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-1/2 hover:border-customDark/35">
+                  className="w-1/2 hover:border-customDark/35"
+                  onClick={() => navigate("/dashboard")}>
                   Sauter
                 </Button>
               </div>

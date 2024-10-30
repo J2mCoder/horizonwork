@@ -1,12 +1,15 @@
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
 import { InputOTP } from "@/components/ui/input-otp"
+import { userAtom } from "@/contexts/UseUser"
 import axios from "axios"
+import Cookies from "js-cookie"
 import { useState } from "react"
 import { ImSpinner } from "react-icons/im"
 import { SiGoogletagmanager } from "react-icons/si"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
+import { useRecoilState } from "recoil"
 
 export default function VerifyCode() {
   const [loader, setLoader] = useState(false)
@@ -14,36 +17,45 @@ export default function VerifyCode() {
   const [otp2, setOtp2] = useState("")
   const [otp3, setOtp3] = useState("")
   const [otp4, setOtp4] = useState("")
-  const [otp5, setOtp5] = useState("")
-  const [otp6, setOtp6] = useState("")
 
-  const navigation = useNavigate()
+  const [user, setUser] = useRecoilState(userAtom)
+  const navigate = useNavigate()
 
   const handleSubmit = (d) => {
     d.preventDefault()
+    setLoader(true)
     const codes = {
-      code: otp1 + otp2 + otp3 + otp4 + otp5 + otp6,
+      code: otp1 + otp2 + otp3 + otp4,
     }
     console.log("Submitted OTP:", codes)
 
     axios
-      .post("http://localhost:8000/api/auth/otp-auth", codes)
+      .post("http://localhost:8000/api/auth/confirm-code", codes, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      })
       .then((res) => {
         console.log(res.data)
-        setLoader(false)
-        toast("Votre code d'accès est correct.")
-        setTimeout(() => {
-          navigation("/auth-set-profile")
-        }, 500)
+        if (res.data?.success === true) {
+          toast.success(res.data.message)
+          setUser(res.data.user)
+          navigate("/auth-set-profile")
+        }
       })
       .catch((err) => {
-        console.log(err.response.data)
+        if (err.data?.success === false) {
+          toast.warning(err.data.message)
+          console.log(err.response.data)
+        }
+      })
+      .finally(() => {
         setLoader(false)
-        toast("Votre code d'accès est incorrect.")
       })
   }
 
-  console.log(otp1, otp2, otp3, otp4, otp5, otp6)
+  console.log(otp1, otp2, otp3, otp4)
   return (
     <div className="h-screen w-screen overflow-x-hidden">
       <div className="container mx-auto flex size-full flex-col gap-8 p-4 md:p-12">
@@ -77,32 +89,28 @@ export default function VerifyCode() {
                 method="post"
                 onSubmit={handleSubmit}
                 className="mt-3 flex flex-col gap-4">
-                <div className="flex w-full items-center justify-center gap-2">
-                  <InputOTP
-                    value={otp1}
-                    onChange={(e) => setOtp1(e.target.value)}
-                  />
-                  <InputOTP
-                    value={otp2}
-                    onChange={(e) => setOtp2(e.target.value)}
-                  />
-                  <InputOTP
-                    value={otp3}
-                    onChange={(e) => setOtp3(e.target.value)}
-                  />
+                <div className="flex w-full items-center justify-center flex-row gap-2">
+                  <div className="flex gap-3">
+                    <InputOTP
+                      value={otp1}
+                      onChange={(e) => setOtp1(e.target.value)}
+                    />
+                    <InputOTP
+                      value={otp2}
+                      onChange={(e) => setOtp2(e.target.value)}
+                    />
+                  </div>
                   <div className=" size-2 rounded-full bg-customDark"></div>
-                  <InputOTP
-                    value={otp4}
-                    onChange={(e) => setOtp4(e.target.value)}
-                  />
-                  <InputOTP
-                    value={otp5}
-                    onChange={(e) => setOtp5(e.target.value)}
-                  />
-                  <InputOTP
-                    value={otp6}
-                    onChange={(e) => setOtp6(e.target.value)}
-                  />
+                  <div className="flex gap-3">
+                    <InputOTP
+                      value={otp3}
+                      onChange={(e) => setOtp3(e.target.value)}
+                    />
+                    <InputOTP
+                      value={otp4}
+                      onChange={(e) => setOtp4(e.target.value)}
+                    />
+                  </div>
                 </div>
                 <div className="">
                   <p className="text-center text-sm font-semibold text-gray-500">

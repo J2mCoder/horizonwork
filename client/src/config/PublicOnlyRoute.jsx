@@ -1,4 +1,5 @@
 import { tokenData, userAtom } from "@/contexts/UseUser"
+import { Navigate } from "react-router-dom"
 import { useRecoilValue } from "recoil"
 
 // Composant de route protégée
@@ -18,4 +19,6 @@ export default function PublicOnlyRoute({ children }) {
   if (!user?.isEmailConfirmed && token) {
     return <Navigate to={"/verify-code"} />
   }
+
+  return children
 }

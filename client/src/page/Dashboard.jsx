@@ -38,6 +38,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import axios from "axios"
 import {
   BarChart,
   Bell,
@@ -54,9 +55,30 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { toast } from "react-toastify"
 
 export default function Dashboard() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  const logOut = (e) => {
+    e.preventDefault()
+    axios
+      .get("http://localhost:8000/api/auth/logout", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data?.success === true) {
+          toast.success(res.data?.message)
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        }
+      })
+      .catch((err) => {
+        toast.warning("Une erreur est survenue")
+        console.log(err)
+      })
+  }
 
   const NavItems = () => (
     <>
@@ -132,7 +154,8 @@ export default function Dashboard() {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full justify-start">
+                className="w-full justify-start"
+                onClick={logOut}>
                 <LogOut className="mr-2 size-4" />
                 Logout
               </Button>

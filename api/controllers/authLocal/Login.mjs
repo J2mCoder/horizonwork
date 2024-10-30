@@ -1,8 +1,9 @@
+import jwt from "jsonwebtoken"
 import passport from "passport"
 import { catchAsync } from "../../utils/catchAsync.mjs"
 
 export const loginLocal = catchAsync(async (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
+  passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err) {
       return next(err)
     }
@@ -14,21 +15,23 @@ export const loginLocal = catchAsync(async (req, res, next) => {
       })
     }
 
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err)
-      }
+    const tokenPayload = { id: user._id, email: user.email }
+    const token = jwt.sign(tokenPayload, process.env.KEY_SECRET, {
+      expiresIn: 7 * 24 * 60 * 60 * 1000,
+    })
 
-      req.session.user = user._id // Stocker l'ID de l'utilisateur dans la session
-      res.status(200).json({
-        success: true,
-        message: "Connexion réussie",
-        user: {
-          id: user._id,
-          displayName: user.displayName,
-          email: user.email,
-        },
-      })
+    // Envoyer le cookie avec le token
+    res.cookie("token", token, {
+      httpOnly: false,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    res.status(200).json({
+      success: true,
+      message: "Connexion réussie",
+      user,
+      token, // Optionally include token in the JSON response
     })
   })(req, res, next)
 })

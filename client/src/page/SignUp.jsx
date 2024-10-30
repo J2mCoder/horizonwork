@@ -30,7 +30,7 @@ export default function SignUp() {
   const [cpassword, setCpassword] = useState("")
 
   const [user, setUser] = useRecoilState(userAtom)
-  console.log(user)
+  const navigate = useNavigate()
 
   const [errFname, setErrFname] = useState(false)
   const [errLname, setErrLname] = useState(false)
@@ -38,8 +38,6 @@ export default function SignUp() {
   const [errEmail, setErrEmail] = useState(false)
   const [errPassword, setErrPassword] = useState(false)
   const [errCpassword, setErrCpassword] = useState(false)
-
-  const navigation = useNavigate()
 
   const handleSubmit = (d) => {
     d.preventDefault()
@@ -84,20 +82,18 @@ export default function SignUp() {
           if (res.data?.success === true) {
             toast.success(res.data?.message)
             setUser(res.data?.user)
-            setTimeout(() => {
-              navigation("/verify-email")
-            }, 1000)
             console.log(res.data)
+            navigate("/verify-code")
           }
         })
         .catch((err) => {
-          console.log(err, "erreur")
-          /* toast.warning(err.response.data?.error) */
+          console.log(err.response.data, "erreur")
+          if (err?.response.data?.success === false) {
+            toast.warning(err.response.data?.message)
+          }
         })
         .finally(() => {
-          setTimeout(() => {
-            setLoader(false)
-          }, 1000)
+          setLoader(false)
         })
     }
   }

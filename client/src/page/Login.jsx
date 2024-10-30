@@ -3,20 +3,21 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ValidateEmail, ValidatePassword } from "@/components/Validate"
-import { userAtom } from "@/contexts/UseUser"
+import { tokenData, userAtom } from "@/contexts/UseUser"
 import axios from "axios"
 import { useState } from "react"
 import { FcGoogle } from "react-icons/fc"
 import { ImSpinner } from "react-icons/im"
 import { SiGoogletagmanager } from "react-icons/si"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
-import { useRecoilValue } from "recoil"
+import { useRecoilState } from "recoil"
 
 export default function Login() {
-  const val = useRecoilValue(userAtom)
-  console.log(val)
+  const [user, setUser] = useRecoilState(userAtom)
+  const [token, setToken] = useRecoilState(tokenData)
   const [loader, setLoader] = useState(false)
+  const navigate = useNavigate()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -39,11 +40,16 @@ export default function Login() {
       setLoader(true)
 
       axios
-        .post("http://localhost:8080/api/auth/login", data, {
+        .post("http://localhost:8000/api/auth/login", data, {
           withCredentials: true,
         })
         .then((res) => {
-          console.log(res.data, "jean")
+          if (res.data?.success === true) {
+            toast.success(res.data?.message)
+            setUser(res.data?.user)
+            setToken(res.data?.token)
+            navigate("/dashboard")
+          }
         })
         .catch((err) => {
           console.log(err.response.data)
@@ -52,9 +58,7 @@ export default function Login() {
           }
         })
         .finally(() => {
-          setTimeout(() => {
-            setLoader(false)
-          }, 1000)
+          setLoader(false)
         })
     }
   }
@@ -95,9 +99,9 @@ export default function Login() {
                   <Button
                     onClick={HandleGoogle}
                     type="button"
-                    className="flex h-12 w-full gap-3 border bg-customLight text-customDark hover:bg-customLight/5">
+                    className="text-lg flex h-12 w-full gap-3 border bg-customLight text-customDark hover:bg-customLight/5">
                     <FcGoogle className="text-2xl" />
-                    <span className="text-lg">{`Se connecter avec Google`}</span>
+                    <span className="text-sm sm:text-lg">{`Se connecter avec Google`}</span>
                   </Button>
                 </div>
                 <div className="flex items-center justify-center">

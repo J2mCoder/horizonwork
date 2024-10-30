@@ -8,13 +8,14 @@ import { useRecoilState } from "recoil"
 import Loader from "./components/Loader"
 import ProtectedDashboard from "./config/ProtectedDashboard"
 import ProtectedLogin from "./config/ProtectedLogin"
+import ProtectedSetProfil from "./config/ProtectedSetProfil"
 import ProtectedSignup from "./config/ProtectedSignup"
 import ProtectedVerifyCode from "./config/ProtectedVerifyCode"
+import PublicOnlyRoute from "./config/PublicOnlyRoute"
 import { tokenData, userAtom } from "./contexts/UseUser"
 import Dashboard from "./page/Dashboard"
 import ForgotPassword from "./page/ForgotPassword"
 import Login from "./page/Login"
-import MoreInfo from "./page/MoreInfo"
 import NotFound from "./page/NotFund"
 import ResetPassword from "./page/ResetPassword"
 import SignUp from "./page/SignUp"
@@ -26,7 +27,7 @@ function App() {
   const [user, setUser] = useRecoilState(userAtom)
   const [token, setToken] = useRecoilState(tokenData)
 
-  console.log(user)
+  console.log(user, token)
   useEffect(() => {
     setToken(Cookies.get("token"))
     axios
@@ -38,22 +39,20 @@ function App() {
       })
       .then((response) => {
         setUser(response?.data.user)
-        console.log(response)
+        console.log(response, "app response")
       })
       .catch((err) => {
-        setUser(null)
-        setToken(null)
-        console.log(err)
+        console.log(err, "app error")
       })
       .finally(() => setLoader(false))
-    setTimeout(() => setLoader(false), 1000)
   }, [])
 
-  console.log(token)
+  console.log(token, "token app page")
 
-  return (
+  return loader ? (
+    <Loader />
+  ) : (
     <>
-      {loader && <Loader />}
       <BrowserRouter>
         <Routes>
           <Route
@@ -73,8 +72,22 @@ function App() {
               </ProtectedLogin>
             }
           />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicOnlyRoute>
+                <ForgotPassword />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <PublicOnlyRoute>
+                <ResetPassword />
+              </PublicOnlyRoute>
+            }
+          />
           <Route
             path="/verify-code"
             element={
@@ -83,8 +96,14 @@ function App() {
               </ProtectedVerifyCode>
             }
           />
-          <Route path="/auth-set-profile" element={<StepSetProfile />} />
-          <Route path="/more-info" element={<MoreInfo />} />
+          <Route
+            path="/auth-set-profile"
+            element={
+              <ProtectedSetProfil>
+                <StepSetProfile />
+              </ProtectedSetProfil>
+            }
+          />
           <Route
             path="/dashboard"
             element={

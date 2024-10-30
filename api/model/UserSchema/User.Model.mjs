@@ -24,7 +24,7 @@ const UserModel = new Schema(
     googleId: {
       type: String,
       unique: true,
-      required: true,
+      sparse: true,
     },
     isEmailConfirmed: {
       type: Boolean,
@@ -40,8 +40,9 @@ const UserModel = new Schema(
     },
     avatar: {
       type: String,
-      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      default: "default.png",
     },
+    confirmationCode: String,
   },
   { timestamps: true, versionKey: false }
 )

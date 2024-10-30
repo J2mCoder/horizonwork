@@ -1,6 +1,5 @@
 import "dotenv/config.js"
 import jwt from "jsonwebtoken"
-import { v4 as uuid } from "uuid"
 import User from "../../model/UserSchema/User.Model.mjs"
 import { catchAsync } from "../../utils/catchAsync.mjs"
 import {
@@ -29,18 +28,20 @@ export const signUpLocal = catchAsync(async (req, res) => {
   )
   if (confirmationError) return confirmationError
 
-  const googleId = uuid() // Génère un ID Google si nécessaire
-
   const existingUser = await User.findOne({
     $or: [{ email: Email }, { username: username }],
   })
 
   if (existingUser) {
     if (existingUser.email === Email) {
-      return res.status(409).json({ error: "Email déjà utilisé" })
+      return res
+        .status(409)
+        .json({ message: "Email déjà utilisé", success: false })
     }
     if (existingUser.username === username) {
-      return res.status(409).json({ error: "Nom d'utilisateur déjà utilisé" })
+      return res
+        .status(409)
+        .json({ message: "Nom d'utilisateur déjà utilisé", success: false })
     }
   }
 
@@ -50,10 +51,10 @@ export const signUpLocal = catchAsync(async (req, res) => {
     username: username,
     email: Email,
     password: Password,
-    googleId: googleId,
     isEmailConfirmed: false,
-    token: uuid(),
     googleAuth: false,
+    confirmationCode: otp(),
+    googleId: null,
   })
 
   const userToReturn = {
@@ -66,14 +67,14 @@ export const signUpLocal = catchAsync(async (req, res) => {
   }
   const tokenPayload = { id: newUser._id, email: newUser.email } // Créez un payload pour le token
   const token = jwt.sign(tokenPayload, process.env.KEY_SECRET, {
-    expiresIn: 72 * 60 * 60 * 1000,
+    expiresIn: 7 * 24 * 60 * 60 * 1000,
   })
 
   // Envoyer le cookie avec le token
   res.cookie("token", token, {
     httpOnly: false,
     secure: false,
-    maxAge: 72 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   })
 
   sendMail(newUser.email, otp())

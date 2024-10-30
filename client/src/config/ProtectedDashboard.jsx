@@ -6,6 +6,7 @@ export default function ProtectedDashboard({ children }) {
   const user = useRecoilValue(userAtom)
   const token = useRecoilValue(tokenData)
 
+  console.log(user, token, "protected dashboard")
   if (!user && !token) {
     return <Navigate to={"/"} />
   }
@@ -14,7 +15,7 @@ export default function ProtectedDashboard({ children }) {
     return children
   }
 
-  if (!user?.isEmailConfirmed && token) {
+  if (user?.isEmailConfirmed === false && token) {
     return <Navigate to={"/verify-code"} />
   }
 }

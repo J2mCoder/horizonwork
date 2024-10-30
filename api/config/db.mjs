@@ -7,6 +7,6 @@ export async function connect_db() {
       .then(() => console.log("la base de donnée est connecté"))
       .catch((err) => console.log("Erreur survenue :", err))
   } catch (err) {
-    console.log(err)
+    console.log("Erreur survenue :", err)
   }
 }

@@ -1,4 +1,4 @@
 export const otp = () => {
-  const rand = Math.floor(Math.random() * 1000000)
+  const rand = Math.floor(Math.random() * 10000)
   return rand
 }

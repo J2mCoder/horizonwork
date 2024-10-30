@@ -4,9 +4,11 @@ import "dotenv/config"
 import express, { json, urlencoded } from "express"
 import { connect_db } from "./config/db.mjs"
 /* import { errorHandler } from "./middleware/errorHandler.mjs" */
-import { checkSession } from "./middleware/checkSession.mjs"
+import passport from "passport"
+import configurePassport from "./config/passport.mjs"
 import routesAuthLocal from "./routes/authLocalRoutes/authLocalRoutes.mjs"
 import authUserVerificate from "./routes/authRouteVerificate/authVerificateRoute.mjs"
+import setProfilRouter from "./routes/profileRoute/setProfilRoute.mjs"
 
 const app = express()
 const PORT = process.env.PORT || 8000
@@ -22,9 +24,11 @@ app.use(
     credentials: true,
   })
 )
-app.use(checkSession)
+configurePassport()
+app.use(passport.initialize())
 app.use("/api", routesAuthLocal)
 app.use("/api", authUserVerificate)
+app.use("/api", setProfilRouter)
 /* app.use(errorHandler) */
 
 app.listen(PORT, () => {
