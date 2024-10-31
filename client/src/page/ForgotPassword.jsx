@@ -69,7 +69,7 @@ export default function Login() {
                 </p>
               </div>
             </div>
-            <div className="h-auto w-[90%] space-y-4 rounded-lg bg-white p-4 py-6 shadow-sm sm:w-[520px] md:px-10">
+            <div className="h-auto w-[90%] flex-1 space-y-4 rounded-lg bg-white p-4 py-6 shadow-sm sm:w-[520px] md:px-10">
               <div className="flex items-center justify-center p-4">
                 <h2 className="text-center text-3xl font-bold text-customDark">
                   Réinitialiser le mot de passe
@@ -95,7 +95,7 @@ export default function Login() {
                   <Button
                     type="submit"
                     disabled={loader}
-                    className="h-12 w-full bg-customDark text-xl font-bold hover:bg-customDark/95">
+                    className="h-12 w-full bg-customDark text-sm md:text-xl font-bold hover:bg-customDark/95">
                     {loader ? (
                       <div className="flex items-center justify-center">
                         <ImSpinner className="animate-spin text-2xl" />

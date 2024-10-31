@@ -29,7 +29,10 @@ function App() {
 
   console.log(user, token)
   useEffect(() => {
-    setToken(Cookies.get("token"))
+    if (Cookies.get("token")) {
+      setToken(Cookies.get("token"))
+    }
+
     axios
       .get("http://localhost:8000/api/verify-user", {
         withCredentials: true,
@@ -39,9 +42,12 @@ function App() {
       })
       .then((response) => {
         setUser(response?.data.user)
+        setToken(response?.data.token)
         console.log(response, "app response")
       })
       .catch((err) => {
+        setUser(null)
+        setToken(null)
         console.log(err, "app error")
       })
       .finally(() => setLoader(false))

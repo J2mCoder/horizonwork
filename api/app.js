@@ -16,6 +16,7 @@ connect_db()
 
 app.use(json())
 app.use(urlencoded({ extended: true }))
+app.use(express.static("public/images"))
 app.use(cookieParser())
 app.use(
   cors({

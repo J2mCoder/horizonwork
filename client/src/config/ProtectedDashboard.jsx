@@ -1,4 +1,5 @@
 import { tokenData, userAtom } from "@/contexts/UseUser"
+import Cookies from "js-cookie"
 import { Navigate } from "react-router-dom"
 import { useRecoilValue } from "recoil"
 
@@ -6,8 +7,12 @@ export default function ProtectedDashboard({ children }) {
   const user = useRecoilValue(userAtom)
   const token = useRecoilValue(tokenData)
 
-  console.log(user, token, "protected dashboard")
   if (!user && !token) {
+    return <Navigate to={"/"} />
+  }
+
+  if (!user) {
+    Cookies.remove("token")
     return <Navigate to={"/"} />
   }
 

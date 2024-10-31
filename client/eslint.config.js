@@ -28,6 +28,7 @@ export default [
       react,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
+      tailwindcss: tailwind,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -39,7 +40,7 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
+      ...tailwind.configs.recommended.rules,
     },
   },
-  ...tailwind.configs["flat/recommended"],
 ]
