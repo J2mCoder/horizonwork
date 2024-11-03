@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }) {
 
   // Si l'utilisateur est authentifié, on bloque l'accès à certaines pages
   if (user?.isEmailConfirmed && token) {
-    return <Navigate to={"/dashboard"} />
+    return <Navigate to={"/home"} />
   }
 
   return children

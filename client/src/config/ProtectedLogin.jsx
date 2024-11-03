@@ -7,7 +7,7 @@ export default function ProtectedLogin({ children }) {
   const token = useRecoilValue(tokenData)
 
   if (user?.isEmailConfirmed && token && user) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/home" replace />
   }
 
   if (token && !user?.isEmailConfirmed && user) {

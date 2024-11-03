@@ -39,6 +39,25 @@ export const userVerificate = catchAsync(async (req, res) => {
         .json({ message: "Token invalide", user: null, success: false })
     }
 
+    const tenMinutesInSeconds = 10 * 60
+    const newExp = decoded.exp + tenMinutesInSeconds
+
+    const tokenPayload = {
+      id: user._id,
+      email: user.email,
+    }
+
+    const newToken = jwt.sign(tokenPayload, process.env.KEY_SECRET, {
+      expiresIn: newExp - Math.floor(Date.now() / 1000),
+    })
+
+    res.cookie("token", newToken, {
+      httpOnly: false,
+      secure: false,
+      sameSite: "strict",
+      expires: new Date(newExp * 1000),
+    })
+
     res.status(200).json({
       success: true,
       message: "Authentification reussie",

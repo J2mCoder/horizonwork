@@ -67,7 +67,7 @@ export const signUpLocal = catchAsync(async (req, res) => {
   }
   const tokenPayload = { id: newUser._id, email: newUser.email } // Créez un payload pour le token
   const token = jwt.sign(tokenPayload, process.env.KEY_SECRET, {
-    expiresIn: 7 * 24 * 60 * 60 * 1000,
+    expiresIn: 7 * 24 * 60 * 60,
   })
 
   // Envoyer le cookie avec le token

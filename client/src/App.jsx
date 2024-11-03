@@ -6,21 +6,26 @@ import { Bounce, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useRecoilState } from "recoil"
 import Loader from "./components/Loader"
-import ProtectedDashboard from "./config/ProtectedDashboard"
+import ProtectedAuth from "./config/ProtectedAuth"
+import ProtectedHome from "./config/ProtectedHome"
 import ProtectedLogin from "./config/ProtectedLogin"
 import ProtectedSetProfil from "./config/ProtectedSetProfil"
 import ProtectedSignup from "./config/ProtectedSignup"
 import ProtectedVerifyCode from "./config/ProtectedVerifyCode"
 import PublicOnlyRoute from "./config/PublicOnlyRoute"
 import { tokenData, userAtom } from "./contexts/UseUser"
-import Dashboard from "./page/Dashboard"
 import ForgotPassword from "./page/ForgotPassword"
+import Home from "./page/Home"
 import Login from "./page/Login"
 import NotFound from "./page/NotFund"
+import Profile from "./page/Profile"
 import ResetPassword from "./page/ResetPassword"
 import SignUp from "./page/SignUp"
 import { StepSetProfile } from "./page/StepSetProfile"
 import VerifyCode from "./page/VerifyCode"
+import Dashboard from "./widgets/Dashboard"
+import Member from "./widgets/Member"
+import Project from "./widgets/Project"
 
 function App() {
   const [loader, setLoader] = useState(true)
@@ -48,6 +53,7 @@ function App() {
       .catch((err) => {
         setUser(null)
         setToken(null)
+        Cookies.remove("token")
         console.log(err, "app error")
       })
       .finally(() => setLoader(false))
@@ -111,11 +117,44 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/home"
             element={
-              <ProtectedDashboard>
-                <Dashboard />
-              </ProtectedDashboard>
+              <ProtectedHome>
+                <Home />
+              </ProtectedHome>
+            }>
+            <Route
+              path=""
+              exact={true}
+              element={
+                <ProtectedAuth>
+                  <Dashboard />
+                </ProtectedAuth>
+              }
+            />
+            <Route
+              path="project"
+              element={
+                <ProtectedAuth>
+                  <Project />
+                </ProtectedAuth>
+              }
+            />
+            <Route
+              path="members"
+              element={
+                <ProtectedAuth>
+                  <Member />
+                </ProtectedAuth>
+              }
+            />
+          </Route>
+          <Route
+            path="/profile"
+            element={
+              <ProtectedAuth>
+                <Profile />
+              </ProtectedAuth>
             }
           />
           <Route path="/*" element={<NotFound />} />

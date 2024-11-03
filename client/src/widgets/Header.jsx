@@ -30,21 +30,65 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { userAtom } from "@/contexts/UseUser"
 import { NavItems } from "@/widgets/NavItems"
-import { Bell, LogOut, Menu, Search, Settings } from "lucide-react"
+import axios from "axios"
+import { Bell, LogOut, Menu, Plus, Search, Settings, User } from "lucide-react"
 import { useState } from "react"
+import { SiGoogletagmanager } from "react-icons/si"
+import { TbUsersPlus } from "react-icons/tb"
+import { toast } from "react-toastify"
+import { useRecoilValue } from "recoil"
 
 export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const user = useRecoilValue(userAtom)
+
+  const logOut = (e) => {
+    e.preventDefault()
+    axios
+      .get("http://localhost:8000/api/auth/logout", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data?.success === true) {
+          toast.success(res.data?.message)
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        }
+      })
+      .catch((err) => {
+        toast.warning("Une erreur est survenue")
+        console.log(err)
+      })
+  }
+
   return (
-    <header className="flex h-14 items-center border-b border-customDark/10 px-4 lg:px-6">
+    <header
+      className="flex h-14 items-center fixed top-0 
+    right-0 left-0 z-50 lg:left-[288px] bg-customLight border-b border-customDark/10 px-4 lg:px-6">
       <div className="flex flex-1 items-center">
-        <span className="text-xl font-bold md:hidden">HorizonWork</span>
+        <SiGoogletagmanager className="text-customDark text-xl mr-1 block lg:hidden" />
+        <h1 className=" font-bold text-slate-800 text-xl block lg:hidden">
+          Horizon<span className="text-customDark">Work</span>
+        </h1>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        <Button className="hidden md:flex text-lg gap-2 text-customDark bg-white font-semibold border border-customDark  justify-between hover:bg-slate-200">
+          <TbUsersPlus className="size-5" />
+          <span>Equipe</span>
+        </Button>
+        <Button className="hidden md:flex text-lg gap-2 bg-customDark font-semibold  justify-between hover:bg-customDark/95">
+          <Plus className="size-5" />
+          <span>Projet</span>
+        </Button>
         <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="border border-customDark/15 hover:bg-customDark rounded-md hover:text-white font-bold text-customDark">
               <Search className="size-5" />
               <span className="sr-only">Recherche</span>
             </Button>
@@ -80,52 +124,83 @@ export default function Header() {
             </Command>
           </DialogContent>
         </Dialog>
-        <Button variant="ghost" size="icon">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="border border-customDark/15 hover:bg-customDark rounded-md hover:text-white font-bold text-customDark">
           <Bell className="size-5" />
           <span className="sr-only">Notifications</span>
         </Button>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="size-5" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-            <SheetHeader>
-              <SheetTitle>Menu</SheetTitle>
-            </SheetHeader>
-            <nav className="mt-4 flex flex-col gap-4">
-              <NavItems />
-            </nav>
-          </SheetContent>
-        </Sheet>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative size-8 rounded-full">
-              <Avatar className="size-8">
-                <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                <AvatarFallback>JD</AvatarFallback>
+        <div className="block md:hidden">
+          <Sheet className="">
+            <SheetTrigger className="outline-0 border-0 ring-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden border border-customDark/15 hover:bg-customDark rounded-md hover:text-white font-bold text-customDark">
+                <Menu className="size-5" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle>
+                  <div className="flex flex-1 items-center">
+                    <SiGoogletagmanager className="text-customDark text-2xl mr-1 block md:hidden" />
+                    <h1 className=" font-bold text-slate-800 text-2xl block md:hidden">
+                      Horizon<span className="text-customDark">Work</span>
+                    </h1>
+                  </div>
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="mt-10 flex flex-col gap-4">
+                <NavItems />
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <DropdownMenu className="border border-customDark/15 rounded-md hover:text-white font-bold text-customDark">
+          <DropdownMenuTrigger className="outline-0 bottom-0 ring-0">
+            <Button
+              variant="ghost"
+              className=" size-10 rounded-full border-2 outline-0 border-customDark/15 hover:border-customDark font-bold">
+              <Avatar className="size-8 outline-0 border-0">
+                <AvatarImage
+                  src={`http://localhost:8000/${user?.avatar}`}
+                  alt="User"
+                />
+                <AvatarFallback className="text-customDark">{`${user?.firstname.charAt(
+                  0
+                )}${user?.lastname.charAt(0)}`}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
+                <p className="text-sm font-medium leading-none">{`${user?.firstname} ${user?.lastname}`}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  john.doe@example.com
+                  {`${user?.email}`}
                 </p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
+              <User className="mr-2 size-4" />
+              <span>Profil</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <Settings className="mr-2 size-4" />
               <span>Settings</span>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut className="mr-2 size-4" />
-              <span>Log out</span>
+              <button
+                onClick={logOut}
+                className="w-full flex items-center gap-2 font-semibold">
+                <LogOut className="mr-2 size-4" />
+                <span>Déconnexion</span>
+              </button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

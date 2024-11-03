@@ -13,7 +13,7 @@ export default function PublicOnlyRoute({ children }) {
   }
 
   if (user?.isEmailConfirmed && token) {
-    return <Navigate to={"/dashboard"} />
+    return <Navigate to={"/home"} />
   }
 
   if (!user?.isEmailConfirmed && token) {

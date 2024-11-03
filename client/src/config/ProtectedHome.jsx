@@ -3,7 +3,7 @@ import Cookies from "js-cookie"
 import { Navigate } from "react-router-dom"
 import { useRecoilValue } from "recoil"
 
-export default function ProtectedDashboard({ children }) {
+export default function ProtectedHome({ children }) {
   const user = useRecoilValue(userAtom)
   const token = useRecoilValue(tokenData)
 

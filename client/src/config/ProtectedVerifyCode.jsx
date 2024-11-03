@@ -13,7 +13,7 @@ export default function ProtectedVerifyCode({ children }) {
 
   // Redirection vers le tableau de bord si l'utilisateur a confirmé son e-mail
   if (user?.isEmailConfirmed && token) {
-    return <Navigate to={"/dashboard"} />
+    return <Navigate to={"/home"} />
   }
 
   if (user?.isEmailConfirmed && token && user.avatar === "default.png") {

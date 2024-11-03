@@ -7,30 +7,10 @@ import { NavItems } from "./NavItems"
 
 export default function Slidebar() {
   const user = useRecoilValue(userAtom)
-  console.log(user, "Slidebar")
-  /* const logOut = (e) => {
-    e.preventDefault()
-    axios
-      .get("http://localhost:8000/api/auth/logout", {
-        withCredentials: true,
-      })
-      .then((res) => {
-        if (res.data?.success === true) {
-          toast.success(res.data?.message)
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
-        }
-      })
-      .catch((err) => {
-        toast.warning("Une erreur est survenue")
-        console.log(err)
-      }) 
-  }*/
 
   return (
     <div>
-      <aside className="hidden w-72 border-r md:block bg-white">
+      <aside className="hidden w-72 border-r lg:block bg-white">
         <div className="flex flex-col w-72 fixed top-0 h-full bg-white left-0">
           <div className="flex items-center px-6 w-full border-dashed h-14 border-b border-customDark/30 pb-2 shadow-sm">
             <SiGoogletagmanager className="text-customDark text-2xl mr-1" />

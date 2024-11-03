@@ -22,7 +22,7 @@ export default function ProtectedSetProfil({ children }) {
   // Si l'utilisateur est authentifié et que son e-mail est confirmée
   // On redirige vers le tableau de bord si l'utilisateur a déjà mis à jour son avatar
   if (user?.isEmailConfirmed && token && user.avatar !== "default.png") {
-    return <Navigate to={"/dashboard"} />
+    return <Navigate to={"/home"} />
   }
 
   // Si l'utilisateur est authentifié et que son e-mail est confirmée
