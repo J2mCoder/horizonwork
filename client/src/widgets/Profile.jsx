@@ -150,12 +150,24 @@ export default function Profile() {
               </div>
             </CardHeader>
             <CardContent className="w-full bg-customLight/60 pt-3">
-              <p className="text-lg font-medium text-customDark/85">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi
-                laudantium iste eaque voluptate aspernatur quae impedit deleniti
-                commodi iure doloremque molestiae, ab accusantium, hic aliquam
-                quis nam odit recusandae repellendus?
-              </p>
+              <Card className="flex flex-col">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-center font-bold text-customDark">
+                    Il semble que vous n'ayez pas encore ajouté de biographie à
+                    votre profil.
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center bg-customLight/60 py-4">
+                  <p className="text-customDark/65 font-medium">
+                    Ajoutez une biographie pour mieux vous présenter aux autres.
+                  </p>
+                  <div className="mt-4">
+                    <Button className="bg-customDark hover:bg-customDark/95 focus-within:ring ring-offset-2 ring-customDark">
+                      Ajouter une biographie
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
           <Card className="overflow-hidden">
