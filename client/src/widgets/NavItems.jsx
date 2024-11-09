@@ -14,7 +14,7 @@ export const NavItems = () => (
   <>
     <Link
       className="flex items-center gap-3 rounded-lg px-3 py-2 text-customDark/80 font-semibold text-xl transition-all hover:bg-gray-100 hover:text-customDark"
-      to={"dashboard"}>
+      to={""}>
       <Home className="size-5 font-semibold" />
       <span>Accueil</span>
     </Link>

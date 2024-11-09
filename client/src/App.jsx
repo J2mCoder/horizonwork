@@ -1,6 +1,6 @@
 import axios from "axios"
 import Cookies from "js-cookie"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Bounce, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -13,22 +13,22 @@ import ProtectedSetProfil from "./config/ProtectedSetProfil"
 import ProtectedSignup from "./config/ProtectedSignup"
 import ProtectedVerifyCode from "./config/ProtectedVerifyCode"
 import PublicOnlyRoute from "./config/PublicOnlyRoute"
-import { tokenData, userAtom } from "./contexts/UseUser"
+import { LoaderAtom, tokenData, userAtom } from "./contexts/UseUser"
 import ForgotPassword from "./page/ForgotPassword"
 import Home from "./page/Home"
 import Login from "./page/Login"
 import NotFound from "./page/NotFund"
-import Profile from "./page/Profile"
 import ResetPassword from "./page/ResetPassword"
 import SignUp from "./page/SignUp"
 import { StepSetProfile } from "./page/StepSetProfile"
 import VerifyCode from "./page/VerifyCode"
 import Dashboard from "./widgets/Dashboard"
 import Member from "./widgets/Member"
+import Profile from "./widgets/Profile"
 import Project from "./widgets/Project"
 
 function App() {
-  const [loader, setLoader] = useState(true)
+  const [loader, setLoader] = useRecoilState(LoaderAtom)
   const [user, setUser] = useRecoilState(userAtom)
   const [token, setToken] = useRecoilState(tokenData)
 
@@ -148,15 +148,16 @@ function App() {
                 </ProtectedAuth>
               }
             />
+            <Route
+              path="profile"
+              element={
+                <ProtectedAuth>
+                  <Profile />
+                </ProtectedAuth>
+              }
+            />
           </Route>
-          <Route
-            path="/profile"
-            element={
-              <ProtectedAuth>
-                <Profile />
-              </ProtectedAuth>
-            }
-          />
+
           <Route path="/*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

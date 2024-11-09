@@ -22,7 +22,7 @@ export default function Slidebar() {
             <NavItems />
           </div>
           <div className="flex items-center py-14 px-3 border-dashed h-14 border-t border-customDark/30 relative">
-            <Link to="/profile" className="absolute inset-0"></Link>
+            <Link to="profile" className="absolute inset-0"></Link>
             <Avatar className="mr-3 size-10">
               <AvatarImage
                 src={`http://localhost:8000/${user?.avatar}`}

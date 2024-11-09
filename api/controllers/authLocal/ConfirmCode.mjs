@@ -20,17 +20,13 @@ export const confirmCode = catchAsync(async (req, res) => {
       .json({ message: "Code invalide", success: false, user: null })
   }
 
-  if (user.isEmailConfirmed) {
-    return res
-      .status(400)
-      .json({ message: "Code déjà utilisé", success: false, user: null })
-  }
-
   // Étape 2: Mettez à jour le statut d'email confirmé
   user.isEmailConfirmed = true
   await user.save()
 
-  if (user && user.isEmailConfirmed) {
-    res.json({ message: "Code confirmé avec succès", success: true, user })
-  }
+  return res.status(200).json({
+    message: "Code confirmé avec успé!",
+    success: true,
+    user: user,
+  })
 })

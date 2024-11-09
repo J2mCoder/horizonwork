@@ -4,13 +4,12 @@ import Slidebar from "@/widgets/Slidebar"
 import { Outlet } from "react-router-dom"
 
 export default function Home() {
-  const currentDate = new Date()
-
+  /*const currentDate = new Date()
   console.log("Date et heure actuelles :", currentDate)
   console.log("Date sous forme de chaîne :", currentDate.toString())
   console.log("Date au format ISO :", currentDate.toISOString())
   console.log("Date uniquement :", currentDate.toLocaleDateString())
-  console.log("Heure uniquement :", currentDate.toLocaleTimeString())
+  console.log("Heure uniquement :", currentDate.toLocaleTimeString()) */
   return (
     <div className="h-screen flex">
       {/* Sidebar for larger screens */}

@@ -37,18 +37,17 @@ export default function VerifyCode() {
         },
       })
       .then((res) => {
-        console.log(res.data)
-        if (res.data?.success === true) {
-          toast.success(res.data.message)
-          setUser(res.data.user)
-          navigate("/auth-set-profile")
+        if (res.response?.data?.success === true) {
+          toast.success(res.response?.data.message)
+          setUser(res.response?.data.user)
         }
+        console.log(res)
       })
       .catch((err) => {
-        if (err.data?.success === false) {
-          toast.warning(err.data.message)
-          console.log(err.response.data)
+        if (err.response?.data?.success === false) {
+          toast.warning(err.response?.data?.message)
         }
+        console.log(err)
       })
       .finally(() => {
         setLoader(false)

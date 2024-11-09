@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import CardMembers from "@/components/CardMembers"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,29 +23,65 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Activity,
-  Filter,
-  Search,
-  Star,
-  UserCheck,
-  Users,
-  UserX,
-} from "lucide-react"
-import { useState } from "react"
+import { LoaderAtom, memberAtom } from "@/contexts/UseUser"
+import axios from "axios"
+import Cookies from "js-cookie"
+import { Activity, Filter, Search, UserCheck, Users, UserX } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { useRecoilState } from "recoil"
 
 export default function Member() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeOnly, setActiveOnly] = useState(false)
-  const [view, setView] = useState("grid")
+  const [members, setMembers] = useRecoilState(memberAtom)
+  const [_, setLoader] = useRecoilState(LoaderAtom)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchProject, setSearchProject] = useState()
+  const [searchStatus, setSearchStatus] = useState()
+  const [searchTask, setSearchTask] = useState()
+  const [filteredMembers, setFilteredMembers] = useState([])
 
-  const filteredMembers = members.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.role.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesActive = !activeOnly || member.status === "Disponible"
-    return matchesSearch && matchesActive
-  })
+  const memoizedMembers = useMemo(() => members, [members])
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/relation/members", {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      })
+      .then((res) => {
+        setMembers(res.data.users)
+        setFilteredMembers(res.data.users)
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setLoader(false))
+  }, [])
+
+  const handleFilter = () => {
+    if (searchQuery) {
+      setFilteredMembers(
+        memoizedMembers.filter(
+          (member) =>
+            member.firstname
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            member.lastname.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      )
+    } else {
+      setFilteredMembers(memoizedMembers)
+    }
+  }
+
+  console.log(filteredMembers)
+
+  /* console.log(
+    members,
+    memoizedMembers,
+    searchQuery,
+    searchProject,
+    searchStatus,
+    searchTask
+  ) */
 
   const projectOptions = [1, 2, 3, 4, 5, 10, "+15"]
   const tacheOptions = [2, 5, 10, "+15"]
@@ -122,12 +158,15 @@ export default function Member() {
               <Input
                 type="text"
                 placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full"
               />
             </div>
             <div className="flex justify-end gap-2 ">
               <div className="hidden xl:flex gap-2">
-                <Select>
+                <Select
+                  onValueChange={(v) => setSearchStatus(v === "__" ? null : v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Statut" />
                   </SelectTrigger>
@@ -137,7 +176,10 @@ export default function Member() {
                     <SelectItem value="false">Inactif</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select>
+                <Select
+                  onValueChange={(v) =>
+                    setSearchProject(v === "__" ? null : v)
+                  }>
                   <SelectTrigger>
                     <SelectValue placeholder="projets" />
                   </SelectTrigger>
@@ -150,12 +192,13 @@ export default function Member() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Select>
+                <Select
+                  onValueChange={(v) => setSearchTask(v === "__" ? null : v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="tachês" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0">Toutes les tachês</SelectItem>
+                    <SelectItem value="__">Toutes les tachês</SelectItem>
                     {tacheOptions.map((i, v) => (
                       <SelectItem key={v} value={`${i}`}>
                         {i} tachês
@@ -171,10 +214,13 @@ export default function Member() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>Statut</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <div className="p-2">
-                    <Select>
+                    <Select
+                      onValueChange={(v) =>
+                        setSearchStatus(v === "__" ? null : v)
+                      }>
                       <SelectTrigger>
                         <SelectValue placeholder="Statut" />
                       </SelectTrigger>
@@ -186,7 +232,10 @@ export default function Member() {
                     </Select>
                   </div>
                   <div className="p-2">
-                    <Select>
+                    <Select
+                      onValueChange={(v) =>
+                        setSearchProject(v === "__" ? null : v)
+                      }>
                       <SelectTrigger>
                         <SelectValue placeholder="Projets" />
                       </SelectTrigger>
@@ -201,7 +250,10 @@ export default function Member() {
                     </Select>
                   </div>
                   <div className="p-2">
-                    <Select>
+                    <Select
+                      onValueChange={(v) =>
+                        setSearchTask(v === "__" ? null : v)
+                      }>
                       <SelectTrigger>
                         <SelectValue placeholder="Tâches" />
                       </SelectTrigger>
@@ -217,73 +269,21 @@ export default function Member() {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button className="h-12 hidden lg:flex bg-customDark lg:px-7 hover:bg-customDark/90 text-lg">
+              <Button
+                className="h-12 hidden lg:flex bg-customDark lg:px-7 hover:bg-customDark/90 text-lg"
+                onClick={handleFilter}>
                 Filtrer
               </Button>
-              <Button className="h-12 flex lg:hidden bg-customDark lg:px-7 hover:bg-customDark/90 text-lg">
+              <Button
+                className="h-12 flex lg:hidden bg-customDark lg:px-7 hover:bg-customDark/90 text-lg"
+                onClick={handleFilter}>
                 <Search className="w-5 h-5" />
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <Card className="w-full max-w-sm bg-customLight">
-            <CardContent className="p-6 space-y-4">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 bg-white">
-                  <AvatarImage
-                    src={"/placeholder.svg?height=100&width=100"}
-                    alt="placeholder"
-                  />
-                  <AvatarFallback className="text-customDark font-bold bg-white border-4 border-customDark">
-                    JD
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="text-xl font-bold text-customDark">
-                    John Doe
-                  </h2>
-                  <p className="text-gray-600 text-lg font-semibold">
-                    UI Designer
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-gray-600 text-sm font-semibold">
-                Berlin-based UI designer Driving business success with Design
-                Systems
-              </p>
-
-              <Card className="flex justify-between items-center p-2 ">
-                <div className="text-center">
-                  <p className="text-xl font-bold">12</p>
-                  <p className="text-sm text-gray-600">Projects</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xl font-bold">22</p>
-                  <p className="text-sm text-gray-600">Referrals</p>
-                </div>
-                <div className="text-center flex flex-col items-center">
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-xl font-bold">33</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Rating</p>
-                </div>
-              </Card>
-
-              <div className="flex gap-3">
-                <Button className="flex-1 bg-customDark font-bold hover:bg-customDark/95">
-                  Invité
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 bg-white border-2 border-customDark/40 hover:bg-gray-200">
-                  voir le profil
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <CardContent className="grid gap-2 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center justify-between">
+          <CardMembers members={filteredMembers} />
         </CardContent>
       </Card>
     </div>

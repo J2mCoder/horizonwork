@@ -37,6 +37,7 @@ import { Bell, LogOut, Menu, Plus, Search, Settings, User } from "lucide-react"
 import { useState } from "react"
 import { SiGoogletagmanager } from "react-icons/si"
 import { TbUsersPlus } from "react-icons/tb"
+import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
 import { useRecoilValue } from "recoil"
 
@@ -131,13 +132,15 @@ export default function Header() {
           <Bell className="size-5" />
           <span className="sr-only">Notifications</span>
         </Button>
-        <div className="block md:hidden">
+        <div
+          className="block 
+        lg:hidden">
           <Sheet className="">
             <SheetTrigger className="outline-0 border-0 ring-0">
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden border border-customDark/15 hover:bg-customDark rounded-md hover:text-white font-bold text-customDark">
+                className="border border-customDark/15 hover:bg-customDark rounded-md hover:text-white font-bold text-customDark">
                 <Menu className="size-5" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -168,6 +171,7 @@ export default function Header() {
                 <AvatarImage
                   src={`http://localhost:8000/${user?.avatar}`}
                   alt="User"
+                  className="object-cover"
                 />
                 <AvatarFallback className="text-customDark">{`${user?.firstname.charAt(
                   0
@@ -186,8 +190,10 @@ export default function Header() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <User className="mr-2 size-4" />
-              <span>Profil</span>
+              <Link to={"profile"} className="w-full flex items-center gap-2">
+                <User className="mr-2 size-4" />
+                <span>Profil</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2 size-4" />

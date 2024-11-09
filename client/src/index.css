@@ -64,3 +64,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+.bg-circle-wave {
+  background-color: #e5e5f7;
+  opacity: 1;
+  background-image: repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      #e5e5f7 10px
+    ),
+    repeating-linear-gradient(#2a305d55, #2a305d);
+}

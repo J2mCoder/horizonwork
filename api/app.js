@@ -9,6 +9,8 @@ import configurePassport from "./config/passport.mjs"
 import routesAuthLocal from "./routes/authLocalRoutes/authLocalRoutes.mjs"
 import authUserVerificate from "./routes/authRouteVerificate/authVerificateRoute.mjs"
 import setProfilRouter from "./routes/profileRoute/setProfilRoute.mjs"
+import profileUserRoute from "./routes/ProfileUserRoute/ProfileUserRoutes.mjs"
+import relationRoute from "./routes/relationRoutes/relationRoute.mjs"
 
 const app = express()
 const PORT = process.env.PORT || 8000
@@ -30,6 +32,9 @@ app.use(passport.initialize())
 app.use("/api", routesAuthLocal)
 app.use("/api", authUserVerificate)
 app.use("/api", setProfilRouter)
+app.use("/api", relationRoute)
+app.use("/api", profileUserRoute)
+/* app.use("/api", flagsProgRoute) */
 /* app.use(errorHandler) */
 
 app.listen(PORT, () => {
